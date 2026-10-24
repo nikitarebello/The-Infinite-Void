@@ -31,18 +31,17 @@
 
   <main class="main-container" id="main-layout">
     
-    <!-- LEFT SIDEBAR (Only visible on Front Page & Archive View) -->
+    <!-- LEFT SIDEBAR -->
     <aside class="sidebar" id="front-sidebar">
       <section class="author-card">
         <h2 class="sidebar-heading">About the Author</h2>
-        <div class="author-name">Nikita Lillian Rebello</div>
+        <div class="author-name">Nikita Lillian Rebello and Meher Malik Patel</div>
         <p class="author-bio">
           Exploring theoretical physics, mathematical mechanics, and foundational philosophy. Writing brief articles on complex topics.
         </p>
         
         <div class="contact-info">
-          <p><strong>Contact:</strong> <a href="mailto:nikita@example.com">nikita@example.com</a></p>
-          <p><strong>GitHub:</strong> <a href="https://github.com" target="_blank">github.com</a></p>
+          <p><strong>Contact:</strong> <a href="mailto:theinfinitevoid@gmail.com">theinfinitevoid@gmail.com</a></p>
         </div>
       </section>
 
@@ -90,25 +89,22 @@
         </div>
       </div>
 
-      <!-- CATEGORY ARCHIVE VIEW (Horizontal Light Boxes) -->
+      <!-- CATEGORY ARCHIVE VIEW -->
       <div id="archive-view" class="view-panel">
         <div class="archive-header">
           <button id="archive-back-btn" class="secondary-btn">&larr; Back to Front Page</button>
           <h1 id="archive-title" class="archive-title">PHILOSOPHY ARTICLES</h1>
         </div>
-        <div id="archive-list" class="archive-list-container">
-          <!-- Horizontal light boxes injected dynamically -->
-        </div>
+        <div id="archive-list" class="archive-list-container"></div>
       </div>
 
-      <!-- SPREAD / READER VIEW (Book Spread Format) -->
+      <!-- SPREAD / READER VIEW -->
       <div id="reader-view" class="view-panel">
         
         <div class="reader-toolbar">
           <div class="reader-toolbar-left">
             <button id="back-to-front" class="secondary-btn">&larr; Return to Front Page</button>
             
-            <!-- Collapsible Table of Contents & Search Button -->
             <div class="toc-dropdown-wrapper">
               <button id="toc-toggle-btn" class="secondary-btn toc-btn">☰ Table of Contents &amp; Search</button>
               <div id="toc-dropdown-panel" class="toc-dropdown-panel">
@@ -116,9 +112,7 @@
                   <input type="text" id="reader-search-input" placeholder="Search category articles..." />
                 </div>
                 <div class="toc-section-title">Jump to Article</div>
-                <div id="toc-articles-list" class="toc-articles-list">
-                  <!-- Injected via JS -->
-                </div>
+                <div id="toc-articles-list" class="toc-articles-list"></div>
               </div>
             </div>
           </div>
@@ -133,25 +127,19 @@
         <!-- Book Spread Layout -->
         <div class="book-spread">
           
-          <!-- LEFT PAGE -->
+          <!-- LEFT PAGE (Stacked Title & Quote Layout matching reference) -->
           <div class="page left-page">
             <div class="page-header">
               <span id="article-category" class="category-badge">PHYSICS</span>
               <span id="article-date" class="meta-date">OCTOBER 2026</span>
             </div>
 
-            <div class="left-page-grid">
-              <div class="title-container">
-                <h1 id="article-title" class="spread-title">TITLE HERE</h1>
-              </div>
-
-              <div class="quote-container">
-                <div class="quote-mark">&ldquo;</div>
-                <blockquote id="article-quote">
-                  Pull quote will appear here...
-                </blockquote>
-                <div class="quote-mark text-right">&rdquo;</div>
-              </div>
+            <div class="left-page-content">
+              <h1 id="article-title" class="spread-title">TITLE HERE</h1>
+              <div class="title-divider"></div>
+              <p id="article-quote" class="spread-quote">
+                Pull quote or subtitle will appear here...
+              </p>
             </div>
 
             <div class="page-footer">
@@ -166,9 +154,7 @@
               <span class="essay-tag" id="right-essay-tag">ESSAY</span>
             </div>
 
-            <div id="article-body-container" class="article-body-single-column">
-              <!-- Body text will be injected dynamically -->
-            </div>
+            <div id="article-body-container" class="article-body-single-column"></div>
 
             <div class="page-footer">
               <span id="page-num-right">02</span>

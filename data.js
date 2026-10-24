@@ -1,6 +1,5 @@
 /**
  * Initial Articles Database
- * You can add new articles directly here in code or use the "+ Draft Article" modal button on the site.
  */
 let articles = [
   {
@@ -14,6 +13,15 @@ let articles = [
   },
   {
     id: "p2",
+    category: "philosophy",
+    title: "EPISTEMIC BOUNDARIES OF REASON",
+    date: "OCTOBER 2026",
+    quote: "Reason maps the structure of possible thoughts, yet remains blind to the unformulated unknown.",
+    body: "Rational inquiry operates within axiomatic boundaries set by language and formal logic. Whenever we attempt to justify the foundational assumptions of logical systems, we invariably invoke circular justification or unproven premises.\n\nKant recognized this inherent limitation in his critique of pure reason, demonstrating that human understanding shapes phenomenal reality through intrinsic cognitive categories. To step outside these categories is to contemplate the unknowable noumenon—an intellectual horizon that permanently recedes as our conceptual models expand.",
+    tags: ["epistemology", "reason", "kant", "logic", "boundaries"]
+  },
+  {
+    id: "ph1",
     category: "physics",
     title: "QUANTUM COHERENCE & ISOLATION",
     date: "OCTOBER 2026",

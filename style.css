@@ -1,6 +1,5 @@
 /* ==========================================================================
    THE INFINITE VOID - SWISS EDITORIAL & NEWSPAPER STYLESHEET
-   Typography: Cinzel (Classic Headings), Playfair Display (Serif), Instrument Serif, Inter (Clean UI)
    ========================================================================== */
 
 :root {
@@ -35,6 +34,7 @@ body {
 .site-header {
   border-bottom: 3px double var(--border-color);
   background: var(--paper-color);
+  transition: all 0.3s ease;
 }
 
 .top-bar {
@@ -69,6 +69,7 @@ body {
 .masthead-container {
   text-align: center;
   padding: 30px 20px 20px 20px;
+  transition: all 0.3s ease;
 }
 
 .site-title {
@@ -79,6 +80,7 @@ body {
   text-transform: uppercase;
   line-height: 1;
   cursor: pointer;
+  transition: font-size 0.3s ease;
 }
 
 .tagline {
@@ -88,6 +90,43 @@ body {
   color: var(--muted-ink);
   margin-top: 8px;
   letter-spacing: 0.02em;
+  transition: all 0.3s ease;
+}
+
+/* Compact Masthead State when viewing article reader */
+.site-header.compact {
+  padding: 0;
+}
+
+.site-header.compact .top-bar {
+  padding: 6px 20px;
+  font-size: 0.65rem;
+}
+
+.site-header.compact .masthead-container {
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  border-top: 1px solid var(--light-border);
+}
+
+.site-header.compact .site-title {
+  font-size: 1.4rem;
+  letter-spacing: 0.05em;
+}
+
+.site-header.compact .tagline {
+  font-size: 0.8rem;
+  margin-top: 0;
+}
+
+@media (max-width: 768px) {
+  .site-header.compact .masthead-container {
+    flex-direction: column;
+    text-align: center;
+  }
 }
 
 /* Main Layout */
@@ -95,6 +134,11 @@ body {
   display: grid;
   grid-template-columns: 280px 1fr;
   min-height: calc(100vh - 150px);
+  transition: grid-template-columns 0.3s ease;
+}
+
+.main-container.full-width {
+  grid-template-columns: 1fr;
 }
 
 @media (max-width: 900px) {
@@ -277,7 +321,7 @@ body {
   color: #888;
 }
 
-/* Book Reader Layout (Image Inspired Spread) */
+/* Book Reader Layout & TOC Dropdown */
 .reader-toolbar {
   display: flex;
   justify-content: space-between;
@@ -285,6 +329,99 @@ body {
   margin-bottom: 20px;
   padding-bottom: 15px;
   border-bottom: 1px solid var(--light-border);
+  position: relative;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.reader-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+/* TOC Dropdown Styles */
+.toc-dropdown-wrapper {
+  position: relative;
+}
+
+.toc-btn {
+  background: var(--paper-color);
+  border: 1px solid var(--border-color);
+}
+
+.toc-dropdown-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 320px;
+  max-height: 400px;
+  background: var(--paper-color);
+  border: 2px solid var(--border-color);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  z-index: 500;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.toc-dropdown-panel.active {
+  display: block;
+}
+
+.toc-search-box {
+  margin-bottom: 12px;
+}
+
+.toc-search-box input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--border-color);
+  font-size: 0.8rem;
+  outline: none;
+}
+
+.toc-section-title {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  border-bottom: 1px solid var(--light-border);
+  padding-bottom: 4px;
+  margin-bottom: 10px;
+}
+
+.toc-articles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toc-item {
+  padding: 6px 8px;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.toc-item:hover {
+  background: var(--bg-color);
+  border-left-color: var(--ink-color);
+}
+
+.toc-item-title {
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.toc-item-meta {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  color: var(--muted-ink);
+  margin-top: 2px;
 }
 
 .reader-nav-controls {
@@ -302,9 +439,14 @@ body {
   cursor: pointer;
 }
 
-.nav-arrow:hover {
+.nav-arrow:hover:not(:disabled) {
   background: var(--ink-color);
   color: var(--paper-color);
+}
+
+.nav-arrow:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .page-indicator {
@@ -408,7 +550,7 @@ blockquote {
   margin: 10px 0;
 }
 
-/* Right Page Article Layout */
+/* Right Page Article Layout - Single Center-Aligned Column */
 .right-page-header {
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 5px;
@@ -422,37 +564,28 @@ blockquote {
   letter-spacing: 0.15em;
 }
 
-.article-body-columns {
-  column-count: 2;
-  column-gap: 25px;
+.article-body-single-column {
+  max-width: 540px;
+  margin: 0 auto;
   font-family: var(--font-serif);
-  font-size: 0.9rem;
-  line-height: 1.55;
-  text-align: justify;
+  font-size: 1.02rem;
+  line-height: 1.65;
+  text-align: center;
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 @media (max-width: 600px) {
-  .article-body-columns {
-    column-count: 1;
+  .article-body-single-column {
+    font-size: 0.95rem;
+    text-align: left;
   }
 }
 
-.article-body-columns p {
-  margin-bottom: 12px;
-  text-indent: 15px;
-}
-
-.article-body-columns p:first-child {
-  text-indent: 0;
-}
-
-.article-body-columns p:first-child::first-letter {
-  font-size: 2.8rem;
-  float: left;
-  line-height: 0.8;
-  padding-right: 6px;
-  font-family: var(--font-heading);
+.article-body-single-column p {
+  margin-bottom: 16px;
 }
 
 .page-footer {

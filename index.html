@@ -5,17 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Infinite Void</title>
   
-  <!-- Modernist & Editorial Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,900;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,400&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
   <!-- Top Navigation & Utility Header -->
-  <header class="site-header">
+  <header class="site-header" id="site-header-container">
     <div class="top-bar">
       <div class="date-issue" id="current-date">VOL. I — NO. 1</div>
       <div class="header-controls">
@@ -25,26 +24,26 @@
     </div>
     
     <!-- Masthead -->
-    <div class="masthead-container">
+    <div class="masthead-container" id="masthead">
       <h1 class="site-title" id="site-title">THE INFINITE VOID</h1>
-      <p class="tagline">A Compendium of Physics, Philosophy &amp; Mathematics</p>
+      <p class="tagline" id="tagline-text">A Compendium of Physics, Philosophy &amp; Mathematics</p>
     </div>
   </header>
 
-  <main class="main-container">
+  <main class="main-container" id="main-layout">
     
-    <!-- LEFT SIDEBAR -->
-    <aside class="sidebar">
+    <!-- LEFT SIDEBAR (Only visible on Front Page) -->
+    <aside class="sidebar" id="front-sidebar">
       <section class="author-card">
         <h2 class="sidebar-heading">About the Author</h2>
-        <div class="author-name">Nikita Lillian Rebello and Meher Malik Patel</div>
+        <div class="author-name">Nikita Lillian Rebello</div>
         <p class="author-bio">
-          Exploring Physics, Mathematics, and Philosophy. Brief articles on complex topics.
+          Exploring theoretical physics, mathematical mechanics, and foundational philosophy. Writing brief articles on complex topics.
         </p>
         
         <div class="contact-info">
-          <p><strong>Contact:</strong> <a href="mailto:theinfinitevoid@gmail.com">theinfinitevoid@gmail.com</a></p>
-          <p><strong>GitHub:</strong> <a href="https://github.com/nikitarebello/The-Infinite-Void" target="_blank">github.com</a></p>
+          <p><strong>Contact:</strong> <a href="mailto:nikita@example.com">nikita@example.com</a></p>
+          <p><strong>GitHub:</strong> <a href="https://github.com" target="_blank">github.com</a></p>
         </div>
       </section>
 
@@ -59,7 +58,7 @@
     </aside>
 
     <!-- RIGHT CONTENT DISPLAY -->
-    <section class="content-area">
+    <section class="content-area" id="content-area">
 
       <!-- FRONT PAGE (Newspaper Style) -->
       <div id="front-page" class="view-panel active">
@@ -99,7 +98,23 @@
       <div id="reader-view" class="view-panel">
         
         <div class="reader-toolbar">
-          <button id="back-to-front" class="secondary-btn">&larr; Return to Front Page</button>
+          <div class="reader-toolbar-left">
+            <button id="back-to-front" class="secondary-btn">&larr; Return to Front Page</button>
+            
+            <!-- Collapsible Table of Contents & Search Button -->
+            <div class="toc-dropdown-wrapper">
+              <button id="toc-toggle-btn" class="secondary-btn toc-btn">☰ Table of Contents &amp; Search</button>
+              <div id="toc-dropdown-panel" class="toc-dropdown-panel">
+                <div class="toc-search-box">
+                  <input type="text" id="reader-search-input" placeholder="Search articles..." />
+                </div>
+                <div class="toc-section-title">Jump to Article</div>
+                <div id="toc-articles-list" class="toc-articles-list">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+            </div>
+          </div>
           
           <div class="reader-nav-controls">
             <button id="prev-article" class="nav-arrow">&larr; Previous</button>
@@ -108,7 +123,7 @@
           </div>
         </div>
 
-        <!-- Book Spread Spread Layout -->
+        <!-- Book Spread Layout -->
         <div class="book-spread">
           
           <!-- LEFT PAGE -->
@@ -138,13 +153,13 @@
             </div>
           </div>
 
-          <!-- RIGHT PAGE -->
+          <!-- RIGHT PAGE (Center-Aligned Single Column) -->
           <div class="page right-page">
             <div class="right-page-header">
-              <span class="essay-tag">ESSAY</span>
+              <span class="essay-tag" id="right-essay-tag">ESSAY</span>
             </div>
 
-            <div id="article-body-container" class="article-body-columns">
+            <div id="article-body-container" class="article-body-single-column">
               <!-- Body text will be injected dynamically -->
             </div>
 

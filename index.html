@@ -19,7 +19,6 @@
       <div class="date-issue" id="current-date">VOL. I — NO. 1</div>
       <div class="header-controls">
         <button id="home-btn" class="nav-btn active-btn">Newspaper Front</button>
-        <button id="add-article-btn" class="nav-btn">+ Draft Article</button>
       </div>
     </div>
     
@@ -67,27 +66,24 @@
           <div class="column category-col">
             <div class="col-header">
               <h2>Philosophy</h2>
-              <span class="col-count" id="count-philosophy">0</span>
             </div>
-            <div class="article-list" id="list-philosophy"></div>
+            <div class="article-showcase" id="showcase-philosophy"></div>
           </div>
 
           <!-- PHYSICS COLUMN -->
           <div class="column category-col">
             <div class="col-header">
               <h2>Physics</h2>
-              <span class="col-count" id="count-physics">0</span>
             </div>
-            <div class="article-list" id="list-physics"></div>
+            <div class="article-showcase" id="showcase-physics"></div>
           </div>
 
           <!-- MATHEMATICS COLUMN -->
           <div class="column category-col">
             <div class="col-header">
               <h2>Mathematics</h2>
-              <span class="col-count" id="count-mathematics">0</span>
             </div>
-            <div class="article-list" id="list-mathematics"></div>
+            <div class="article-showcase" id="showcase-mathematics"></div>
           </div>
 
         </div>
@@ -105,7 +101,7 @@
               <button id="toc-toggle-btn" class="secondary-btn toc-btn">☰ Table of Contents &amp; Search</button>
               <div id="toc-dropdown-panel" class="toc-dropdown-panel">
                 <div class="toc-search-box">
-                  <input type="text" id="reader-search-input" placeholder="Search articles..." />
+                  <input type="text" id="reader-search-input" placeholder="Search category articles..." />
                 </div>
                 <div class="toc-section-title">Jump to Article</div>
                 <div id="toc-articles-list" class="toc-articles-list">
@@ -173,57 +169,6 @@
 
     </section>
   </main>
-
-  <!-- ADD ARTICLE MODAL -->
-  <div id="modal-overlay" class="modal-overlay">
-    <div class="modal">
-      <div class="modal-header">
-        <h2>Draft New Article</h2>
-        <button id="close-modal" class="close-btn">&times;</button>
-      </div>
-      <form id="article-form">
-        <div class="form-group">
-          <label for="form-title">Article Title</label>
-          <input type="text" id="form-title" required placeholder="e.g. On the Electrodynamics of Moving Bodies" />
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="form-category">Category</label>
-            <select id="form-category" required>
-              <option value="philosophy">Philosophy</option>
-              <option value="physics">Physics</option>
-              <option value="mathematics">Mathematics</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="form-date">Date Display</label>
-            <input type="text" id="form-date" placeholder="e.g. October 2026" />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="form-quote">Pull Quote</label>
-          <textarea id="form-quote" rows="2" placeholder="Key quotation for the left page top block..."></textarea>
-        </div>
-
-        <div class="form-group">
-          <label for="form-content">Article Body Content (Separate paragraphs with double enter)</label>
-          <textarea id="form-content" rows="8" required placeholder="Write your full article essay here..."></textarea>
-        </div>
-
-        <div class="form-group">
-          <label for="form-tags">Hidden Tags (Comma separated for searchability)</label>
-          <input type="text" id="form-tags" placeholder="e.g. mechanics, space, time, quantum" />
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" id="cancel-form" class="secondary-btn">Cancel</button>
-          <button type="submit" class="primary-btn">Publish Article</button>
-        </div>
-      </form>
-    </div>
-  </div>
 
   <script src="data.js"></script>
   <script src="script.js"></script>

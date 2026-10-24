@@ -31,17 +31,18 @@
 
   <main class="main-container" id="main-layout">
     
-    <!-- LEFT SIDEBAR (Only visible on Front Page) -->
+    <!-- LEFT SIDEBAR (Only visible on Front Page & Archive View) -->
     <aside class="sidebar" id="front-sidebar">
       <section class="author-card">
         <h2 class="sidebar-heading">About the Author</h2>
-        <div class="author-name">Nikita Lillian Rebello and Meher Malik Patel</div>
+        <div class="author-name">Nikita Lillian Rebello</div>
         <p class="author-bio">
           Exploring theoretical physics, mathematical mechanics, and foundational philosophy. Writing brief articles on complex topics.
         </p>
         
         <div class="contact-info">
-          <p><strong>Contact:</strong> <a href="mailto:theinfinitevoid@gmail.com">theinfinitevoid@gmail.com</a></p>
+          <p><strong>Contact:</strong> <a href="mailto:nikita@example.com">nikita@example.com</a></p>
+          <p><strong>GitHub:</strong> <a href="https://github.com" target="_blank">github.com</a></p>
         </div>
       </section>
 
@@ -65,7 +66,7 @@
           <!-- PHILOSOPHY COLUMN -->
           <div class="column category-col">
             <div class="col-header">
-              <h2>Philosophy</h2>
+              <h2 class="clickable-category" onclick="openCategoryArchive('philosophy')">Philosophy &rarr;</h2>
             </div>
             <div class="article-showcase" id="showcase-philosophy"></div>
           </div>
@@ -73,7 +74,7 @@
           <!-- PHYSICS COLUMN -->
           <div class="column category-col">
             <div class="col-header">
-              <h2>Physics</h2>
+              <h2 class="clickable-category" onclick="openCategoryArchive('physics')">Physics &rarr;</h2>
             </div>
             <div class="article-showcase" id="showcase-physics"></div>
           </div>
@@ -81,11 +82,22 @@
           <!-- MATHEMATICS COLUMN -->
           <div class="column category-col">
             <div class="col-header">
-              <h2>Mathematics</h2>
+              <h2 class="clickable-category" onclick="openCategoryArchive('mathematics')">Mathematics &rarr;</h2>
             </div>
             <div class="article-showcase" id="showcase-mathematics"></div>
           </div>
 
+        </div>
+      </div>
+
+      <!-- CATEGORY ARCHIVE VIEW (Horizontal Light Boxes) -->
+      <div id="archive-view" class="view-panel">
+        <div class="archive-header">
+          <button id="archive-back-btn" class="secondary-btn">&larr; Back to Front Page</button>
+          <h1 id="archive-title" class="archive-title">PHILOSOPHY ARTICLES</h1>
+        </div>
+        <div id="archive-list" class="archive-list-container">
+          <!-- Horizontal light boxes injected dynamically -->
         </div>
       </div>
 

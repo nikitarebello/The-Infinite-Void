@@ -3,7 +3,7 @@ let currentCategoryPool = [];
 let currentCategoryIndex = 0;
 let allArticles = [];
 
-// Load articles from localStorage (auto-synced from admin page) or fallback to data.js
+// Load articles from localStorage or fallback to data.js
 function loadArticlesDatabase() {
   const saved = localStorage.getItem('iv_articles');
   if (saved) {
@@ -19,6 +19,7 @@ function loadArticlesDatabase() {
 
 // DOM Elements
 const frontPage = document.getElementById('front-page');
+const archiveView = document.getElementById('archive-view');
 const readerView = document.getElementById('reader-view');
 const searchInput = document.getElementById('search-input');
 const clearSearchBtn = document.getElementById('clear-search');
@@ -60,6 +61,48 @@ function renderFrontPage(filteredList = null) {
   });
 }
 
+// Open Category Archive View (Horizontal Light Boxes for all articles in a category)
+function openCategoryArchive(categoryName) {
+  loadArticlesDatabase();
+  const catArticles = allArticles.filter(a => a.category === categoryName);
+  
+  document.getElementById('archive-title').textContent = `${categoryName.toUpperCase()} ARCHIVE`;
+  const archiveList = document.getElementById('archive-list');
+  archiveList.innerHTML = '';
+
+  if (catArticles.length === 0) {
+    archiveList.innerHTML = '<p style="font-style:italic; color:var(--muted-ink);">No articles found in this category.</p>';
+  } else {
+    catArticles.forEach(art => {
+      const box = document.createElement('div');
+      box.className = 'archive-lightbox';
+      box.onclick = () => openArticle(art.id);
+
+      box.innerHTML = `
+        <div class="lightbox-content">
+          <h3 class="lightbox-title">${art.title}</h3>
+          <p class="lightbox-extract">${art.excerpt || art.body.slice(0, 130) + '...'}</p>
+        </div>
+        <div class="lightbox-meta">
+          <div>${art.date}</div>
+          <div style="margin-top: 4px; font-weight:700;">Read &rarr;</div>
+        </div>
+      `;
+      archiveList.appendChild(box);
+    });
+  }
+
+  // Transition UI
+  frontPage.classList.remove('active');
+  readerView.classList.remove('active');
+  archiveView.classList.add('active');
+  siteHeader.classList.add('compact');
+  mainLayout.classList.add('full-width');
+  frontSidebar.style.display = 'none';
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 // Open Article Reader Spread View
 function openArticle(articleId) {
   loadArticlesDatabase();
@@ -74,6 +117,7 @@ function openArticle(articleId) {
 
   // Transition UI
   frontPage.classList.remove('active');
+  archiveView.classList.remove('active');
   readerView.classList.add('active');
   siteHeader.classList.add('compact');
   mainLayout.classList.add('full-width');
@@ -158,6 +202,7 @@ function renderTOCList(filterQuery = '') {
 
 // Return to Newspaper Front Page
 function returnToFront() {
+  archiveView.classList.remove('active');
   readerView.classList.remove('active');
   frontPage.classList.add('active');
   siteHeader.classList.remove('compact');
@@ -203,6 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('home-btn').onclick = returnToFront;
   document.getElementById('site-title').onclick = returnToFront;
   document.getElementById('back-to-front').onclick = returnToFront;
+  document.getElementById('archive-back-btn').onclick = returnToFront;
 
   document.getElementById('prev-article').onclick = () => {
     if (currentCategoryIndex > 0) {

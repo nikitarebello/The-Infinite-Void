@@ -3,7 +3,7 @@ let currentCategoryPool = [];
 let currentCategoryIndex = 0;
 let allArticles = [];
 
-// Load articles from localStorage if available (admin updates), otherwise fallback to data.js
+// Load articles from localStorage (auto-synced from admin page) or fallback to data.js
 function loadArticlesDatabase() {
   const saved = localStorage.getItem('iv_articles');
   if (saved) {

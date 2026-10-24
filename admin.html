@@ -11,7 +11,7 @@
   
   <link rel="stylesheet" href="style.css" />
   <style>
-    .admin-container {
+    .admin-wrapper {
       max-width: 800px;
       margin: 40px auto;
       background: var(--paper-color);
@@ -32,34 +32,81 @@
     }
     .success-banner {
       display: none;
-      background: #111;
-      color: #fff;
+      background: var(--ink-color);
+      color: var(--paper-color);
       padding: 12px;
-      font-size: 0.85rem;
+      font-size: 0.85srem;
       margin-bottom: 20px;
       text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    /* Login Gate Overlay */
+    #login-gate {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--bg-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+    .login-box {
+      background: var(--paper-color);
+      border: 2px solid var(--border-color);
+      padding: 30px;
+      width: 100%;
+      max-width: 400px;
+    }
+    .login-box h2 {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+    }
+    .login-error {
+      color: #b00;
+      font-size: 0.75rem;
+      margin-top: 8px;
+      display: none;
     }
   </style>
 </head>
 <body>
 
+  <!-- PASSWORD LOGIN GATE -->
+  <div id="login-gate">
+    <div class="login-box">
+      <h2>Restricted Access</h2>
+      <p style="font-size: 0.85rem; color: var(--muted-ink); margin-bottom: 15px;">Enter your admin password to access the CMS portal.</p>
+      <form id="login-form">
+        <div class="form-group">
+          <input type="password" id="admin-pass-input" required placeholder="Enter password..." />
+        </div>
+        <div id="login-error" class="login-error">Incorrect password. Please try again.</div>
+        <button type="submit" class="primary-btn" style="width:100%; margin-top:10px;">Authenticate</button>
+      </form>
+    </div>
+  </div>
+
   <header class="site-header">
     <div class="top-bar">
       <div class="date-issue">BACKEND ADMINISTRATION</div>
       <div class="header-controls">
+        <button id="logout-btn" class="nav-btn" style="margin-right: 10px;">Lock Session</button>
         <a href="index.html" class="nav-btn">&larr; View Live Website</a>
       </div>
     </div>
   </header>
 
-  <div class="admin-container">
+  <div class="admin-wrapper">
     <div class="admin-header">
       <h1>Publish New Article</h1>
-      <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em;">Secure CMS</span>
+      <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em;">Auto-Deploy Enabled</span>
     </div>
 
     <div id="success-banner" class="success-banner">
-      Article successfully published! Remember to copy the updated array from your browser console or save it into your local <code>data.js</code> file before pushing to GitHub.
+      Article successfully published and auto-formatted live!
     </div>
 
     <form id="admin-article-form">
@@ -104,13 +151,43 @@
       </div>
 
       <div class="modal-footer" style="justify-content: flex-start;">
-        <button type="submit" class="primary-btn" style="width: 100%; padding: 12px; font-size: 0.9rem;">Publish to Repository</button>
+        <button type="submit" class="primary-btn" style="width: 100%; padding: 12px; font-size: 0.9rem;">Publish Article Live</button>
       </div>
     </form>
   </div>
 
   <script src="data.js"></script>
   <script>
+    // SET YOUR ADMIN PASSWORD HERE:
+    const ADMIN_PASSWORD = "void_secure_password_2026"; 
+
+    const loginGate = document.getElementById('login-gate');
+    const loginForm = document.getElementById('login-form');
+    const loginError = document.getElementById('login-error');
+
+    // Check if session is already authenticated
+    if (sessionStorage.getItem('iv_authenticated') === 'true') {
+      loginGate.style.display = 'none';
+    }
+
+    loginForm.onsubmit = (e) => {
+      e.preventDefault();
+      const enteredPass = document.getElementById('admin-pass-input').value;
+      if (enteredPass === ADMIN_PASSWORD) {
+        sessionStorage.setItem('iv_authenticated', 'true');
+        loginGate.style.display = 'none';
+        loginError.style.display = 'none';
+      } else {
+        loginError.style.display = 'block';
+      }
+    };
+
+    document.getElementById('logout-btn').onclick = () => {
+      sessionStorage.removeItem('iv_authenticated');
+      location.reload();
+    };
+
+    // Form Submission & Auto-Formatting Logic
     document.getElementById('admin-article-form').onsubmit = (e) => {
       e.preventDefault();
 
@@ -135,17 +212,21 @@
         tags
       };
 
-      // Add to local articles array & save to localStorage so the live site picks it up immediately
+      // Load existing articles from localStorage or fallback to base data.js
       let existingArticles = JSON.parse(localStorage.getItem('iv_articles')) || articles;
       existingArticles.unshift(newArt);
+      
+      // Save instantly back to localStorage so index.html displays it immediately
       localStorage.setItem('iv_articles', JSON.stringify(existingArticles));
 
-      // Show instructions on how to permanently save to data.js for GitHub
-      console.log("UPDATED ARTICLES ARRAY (Copy this into data.js):", JSON.stringify(existingArticles, null, 2));
-
-      document.getElementById('success-banner').style.display = 'block';
+      const banner = document.getElementById('success-banner');
+      banner.style.display = 'block';
       document.getElementById('admin-article-form').reset();
       window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      setTimeout(() => {
+        banner.style.display = 'none';
+      }, 4000);
     };
   </script>
 </body>

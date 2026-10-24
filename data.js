@@ -1,5 +1,5 @@
 /**
- * Initial Articles Database
+ * Initial Articles Database Fallback
  */
 let articles = [
   {

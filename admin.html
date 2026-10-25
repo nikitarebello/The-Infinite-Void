@@ -12,36 +12,76 @@
   <link rel="stylesheet" href="style.css" />
   <style>
     .admin-wrapper {
-      max-width: 800px;
+      max-width: 900px;
       margin: 40px auto;
       background: var(--paper-color);
       border: 2px solid var(--border-color);
       padding: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
     }
     .admin-header {
       border-bottom: 1px solid var(--border-color);
       padding-bottom: 15px;
-      margin-bottom: 25px;
+      margin-bottom: 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     .admin-header h1 {
       font-family: var(--font-heading);
-      font-size: 1.5rem;
+      font-size: 1.6rem;
     }
     .success-banner {
       display: none;
       background: var(--ink-color);
       color: var(--paper-color);
-      padding: 12px;
-      font-size: 0.85srem;
-      margin-bottom: 20px;
+      padding: 15px;
+      font-size: 0.9rem;
+      margin-bottom: 25px;
       text-align: center;
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
-    /* Login Gate Overlay */
+    .admin-form .form-group {
+      margin-bottom: 25px;
+    }
+    .admin-form label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .admin-form input[type="text"],
+    .admin-form select,
+    .admin-form textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border-color);
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      background: #faf9f5;
+      outline: none;
+      border-radius: 0;
+    }
+    .admin-form textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+    .admin-form textarea#form-content {
+      min-height: 280px;
+      font-family: var(--font-serif);
+      font-size: 1.05rem;
+      line-height: 1.65;
+    }
+    .admin-form input:focus, .admin-form textarea:focus, .admin-form select:focus {
+      background: #fff;
+      border-color: #000;
+      box-shadow: 0 0 0 1px #111;
+    }
+    /* Login Gate */
     #login-gate {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -54,19 +94,20 @@
     .login-box {
       background: var(--paper-color);
       border: 2px solid var(--border-color);
-      padding: 30px;
+      padding: 35px;
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
     .login-box h2 {
       font-family: var(--font-heading);
-      font-size: 1.2rem;
-      margin-bottom: 15px;
+      font-size: 1.3rem;
+      margin-bottom: 12px;
       text-transform: uppercase;
     }
     .login-error {
       color: #b00;
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       margin-top: 8px;
       display: none;
     }
@@ -77,21 +118,21 @@
   <!-- PASSWORD LOGIN GATE -->
   <div id="login-gate">
     <div class="login-box">
-      <h2>Restricted Access</h2>
-      <p style="font-size: 0.85rem; color: var(--muted-ink); margin-bottom: 15px;">Enter your admin password to access the CMS portal.</p>
+      <h2>Restricted Admin Portal</h2>
+      <p style="font-size: 0.85rem; color: var(--muted-ink); margin-bottom: 20px;">Enter your admin password to publish articles.</p>
       <form id="login-form">
-        <div class="form-group">
-          <input type="password" id="admin-pass-input" required placeholder="Enter Password..." />
+        <div class="form-group" style="margin-bottom: 15px;">
+          <input type="password" id="admin-pass-input" required placeholder="Enter password..." style="width:100%; padding:10px; border:1px solid #111;" />
         </div>
         <div id="login-error" class="login-error">Incorrect password. Please try again.</div>
-        <button type="submit" class="primary-btn" style="width:100%; margin-top:10px;">Authenticate</button>
+        <button type="submit" class="primary-btn" style="width:100%; padding: 10px; margin-top:10px;">Authenticate</button>
       </form>
     </div>
   </div>
 
   <header class="site-header">
     <div class="top-bar">
-      <div class="date-issue">BACKEND ADMINISTRATION</div>
+      <div class="date-issue">BACKEND CMS DASHBOARD</div>
       <div class="header-controls">
         <button id="logout-btn" class="nav-btn" style="margin-right: 10px;">Lock Session</button>
         <a href="index.html" class="nav-btn">&larr; View Live Website</a>
@@ -102,22 +143,22 @@
   <div class="admin-wrapper">
     <div class="admin-header">
       <h1>Publish New Article</h1>
-      <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em;">Auto-Deploy Enabled</span>
+      <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted-ink);">Live Auto-Sync Active</span>
     </div>
 
     <div id="success-banner" class="success-banner">
-      Article successfully published and auto-formatted live!
+      ✓ Article successfully formatted and published live!
     </div>
 
-    <form id="admin-article-form">
+    <form id="admin-article-form" class="admin-form">
       <div class="form-group">
         <label for="form-title">Article Title</label>
         <input type="text" id="form-title" required placeholder="e.g. THE ILLUSION OF TEMPORAL FLOW" />
       </div>
 
-      <div class="form-row">
+      <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
         <div class="form-group">
-          <label for="form-category">Category</label>
+          <label for="form-category">Category / Compartment</label>
           <select id="form-category" required>
             <option value="philosophy">Philosophy</option>
             <option value="physics">Physics</option>
@@ -132,40 +173,35 @@
 
       <div class="form-group">
         <label for="form-excerpt">Front Page Extract / Excerpt</label>
-        <textarea id="form-excerpt" rows="2" required placeholder="Short snippet displayed directly under the title on the main page..."></textarea>
+        <textarea id="form-excerpt" rows="3" required placeholder="Short preview snippet displayed under the heading on the main page compartment..."></textarea>
       </div>
 
       <div class="form-group">
-        <label for="form-quote">Pull Quote (Left Page Spread)</label>
-        <textarea id="form-quote" rows="2" placeholder="Key quotation displayed in the left page block..."></textarea>
+        <label for="form-quote">Pull Quote / Subtitle (Left Page Spread)</label>
+        <textarea id="form-quote" rows="3" placeholder="Key quotation or subtitle displayed directly beneath the title on the left page..."></textarea>
       </div>
 
       <div class="form-group">
-        <label for="form-content">Full Article Body Content (Separate paragraphs with double enter)</label>
-        <textarea id="form-content" rows="10" required placeholder="Write your full article essay here..."></textarea>
+        <label for="form-content">Full Article Essay Content (Separate paragraphs with double enter)</label>
+        <textarea id="form-content" rows="14" required placeholder="Write or paste your full article body text here. Each double return creates a new formatted paragraph..."></textarea>
       </div>
 
       <div class="form-group">
-        <label for="form-tags">Hidden Tags (Comma separated for searchability)</label>
-        <input type="text" id="form-tags" placeholder="e.g. time, metaphysics, consciousness" />
+        <label for="form-tags">Hidden Search Tags (Comma separated)</label>
+        <input type="text" id="form-tags" placeholder="e.g. time, metaphysics, consciousness, block universe" />
       </div>
 
-      <div class="modal-footer" style="justify-content: flex-start;">
-        <button type="submit" class="primary-btn" style="width: 100%; padding: 12px; font-size: 0.9rem;">Publish Article Live</button>
-      </div>
+      <button type="submit" class="primary-btn" style="width: 100%; padding: 15px; font-size: 0.95rem; margin-top: 10px;">Publish Article Live &rarr;</button>
     </form>
   </div>
 
-  <script src="data.js"></script>
   <script>
-    // SET YOUR ADMIN PASSWORD HERE:
-    const ADMIN_PASSWORD = "Xfinity+1"; 
+    const ADMIN_PASSWORD = "void_secure_password_2026"; 
 
     const loginGate = document.getElementById('login-gate');
     const loginForm = document.getElementById('login-form');
     const loginError = document.getElementById('login-error');
 
-    // Check if session is already authenticated
     if (sessionStorage.getItem('iv_authenticated') === 'true') {
       loginGate.style.display = 'none';
     }
@@ -187,16 +223,16 @@
       location.reload();
     };
 
-    // Form Submission & Auto-Formatting Logic
+    // Article Publishing Logic with Persistent Storage
     document.getElementById('admin-article-form').onsubmit = (e) => {
       e.preventDefault();
 
-      const title = document.getElementById('form-title').value;
+      const title = document.getElementById('form-title').value.trim();
       const category = document.getElementById('form-category').value;
-      const date = document.getElementById('form-date').value || 'OCTOBER 2026';
-      const excerpt = document.getElementById('form-excerpt').value;
-      const quote = document.getElementById('form-quote').value;
-      const body = document.getElementById('form-content').value;
+      const date = document.getElementById('form-date').value.trim() || 'OCTOBER 2026';
+      const excerpt = document.getElementById('form-excerpt').value.trim();
+      const quote = document.getElementById('form-quote').value.trim();
+      const body = document.getElementById('form-content').value.trim();
       const tagsRaw = document.getElementById('form-tags').value;
       
       const tags = tagsRaw.split(',').map(t => t.trim().toLowerCase()).filter(t => t);
@@ -205,18 +241,20 @@
         id: 'art_' + Date.now(),
         category,
         title: title.toUpperCase(),
-        date,
+        date: date.toUpperCase(),
         excerpt,
         quote,
         body,
         tags
       };
 
-      // Load existing articles from localStorage or fallback to base data.js
-      let existingArticles = JSON.parse(localStorage.getItem('iv_articles')) || articles;
+      // Retrieve existing articles or start with an empty array
+      let existingArticles = JSON.parse(localStorage.getItem('iv_articles')) || [];
+      
+      // Prepend new article so it's always the most recent
       existingArticles.unshift(newArt);
       
-      // Save instantly back to localStorage so index.html displays it immediately
+      // Save permanently to localStorage
       localStorage.setItem('iv_articles', JSON.stringify(existingArticles));
 
       const banner = document.getElementById('success-banner');

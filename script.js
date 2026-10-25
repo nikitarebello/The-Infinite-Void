@@ -3,17 +3,17 @@ let currentCategoryPool = [];
 let currentCategoryIndex = 0;
 let allArticles = [];
 
-// Load articles from localStorage or fallback to data.js
+// Load articles exclusively from localStorage (ensuring old articles persist on every push)
 function loadArticlesDatabase() {
   const saved = localStorage.getItem('iv_articles');
   if (saved) {
     try {
       allArticles = JSON.parse(saved);
     } catch (e) {
-      allArticles = [...articles];
+      allArticles = [];
     }
   } else {
-    allArticles = [...articles];
+    allArticles = [];
   }
 }
 
@@ -41,7 +41,7 @@ function renderFrontPage(filteredList = null) {
     showcaseElem.innerHTML = '';
 
     if (catArticles.length === 0) {
-      showcaseElem.innerHTML = '<p class="card-snippet" style="font-style:italic;">No articles published in this section yet.</p>';
+      showcaseElem.innerHTML = '<p class="card-snippet" style="font-style:italic; color:var(--muted-ink);">No articles published in this section yet. Use the Admin Portal to add articles.</p>';
       return;
     }
 
@@ -71,7 +71,7 @@ function openCategoryArchive(categoryName) {
   archiveList.innerHTML = '';
 
   if (catArticles.length === 0) {
-    archiveList.innerHTML = '<p style="font-style:italic; color:var(--muted-ink);">No articles found in this category.</p>';
+    archiveList.innerHTML = '<p style="font-style:italic; color:var(--muted-ink);">No articles found in this category yet.</p>';
   } else {
     catArticles.forEach(art => {
       const box = document.createElement('div');
@@ -92,7 +92,6 @@ function openCategoryArchive(categoryName) {
     });
   }
 
-  // Transition UI
   frontPage.classList.remove('active');
   readerView.classList.remove('active');
   archiveView.classList.add('active');
@@ -103,7 +102,7 @@ function openCategoryArchive(categoryName) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Open Article Reader Spread View
+// Open Article Reader Spread View (Restricts rotation pool strictly to that category)
 function openArticle(articleId) {
   loadArticlesDatabase();
   const targetArt = allArticles.find(a => a.id === articleId);
@@ -115,7 +114,6 @@ function openArticle(articleId) {
 
   displayCurrentArticle();
 
-  // Transition UI
   frontPage.classList.remove('active');
   archiveView.classList.remove('active');
   readerView.classList.add('active');
@@ -154,7 +152,7 @@ function displayCurrentArticle() {
   document.getElementById('page-num-right').textContent = String((currentCategoryIndex * 2) + 2).padStart(2, '0');
   document.getElementById('reading-position').textContent = `${art.category.toUpperCase()} (${currentCategoryIndex + 1} of ${currentCategoryPool.length})`;
 
-  // Update Nav Buttons State
+  // Update Nav Buttons State (Rotates strictly within the same category compartment)
   document.getElementById('prev-article').disabled = currentCategoryIndex === 0;
   document.getElementById('next-article').disabled = currentCategoryIndex === currentCategoryPool.length - 1;
 

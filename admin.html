@@ -81,7 +81,6 @@
       border-color: #000;
       box-shadow: 0 0 0 1px #111;
     }
-    /* Login Gate */
     #login-gate {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -143,11 +142,11 @@
   <div class="admin-wrapper">
     <div class="admin-header">
       <h1>Publish New Article</h1>
-      <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted-ink);">Live Auto-Sync Active</span>
+      <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted-ink);">Permanent Storage Sync</span>
     </div>
 
     <div id="success-banner" class="success-banner">
-      ✓ Article successfully formatted and published live!
+      ✓ Article published! A backup file has also been downloaded to your computer.
     </div>
 
     <form id="admin-article-form" class="admin-form">
@@ -183,12 +182,12 @@
 
       <div class="form-group">
         <label for="form-content">Full Article Essay Content (Separate paragraphs with double enter)</label>
-        <textarea id="form-content" rows="14" required placeholder="Write or paste your full article body text here. Each double return creates a new formatted paragraph..."></textarea>
+        <textarea id="form-content" rows="14" required placeholder="Write or paste your full article body text here..."></textarea>
       </div>
 
       <div class="form-group">
         <label for="form-tags">Hidden Search Tags (Comma separated)</label>
-        <input type="text" id="form-tags" placeholder="e.g. time, metaphysics, consciousness, block universe" />
+        <input type="text" id="form-tags" placeholder="e.g. time, metaphysics, consciousness" />
       </div>
 
       <button type="submit" class="primary-btn" style="width: 100%; padding: 15px; font-size: 0.95rem; margin-top: 10px;">Publish Article Live &rarr;</button>
@@ -223,7 +222,6 @@
       location.reload();
     };
 
-    // Article Publishing Logic with Persistent Storage
     document.getElementById('admin-article-form').onsubmit = (e) => {
       e.preventDefault();
 
@@ -248,14 +246,18 @@
         tags
       };
 
-      // Retrieve existing articles or start with an empty array
       let existingArticles = JSON.parse(localStorage.getItem('iv_articles')) || [];
-      
-      // Prepend new article so it's always the most recent
       existingArticles.unshift(newArt);
-      
-      // Save permanently to localStorage
       localStorage.setItem('iv_articles', JSON.stringify(existingArticles));
+
+      // Automatically trigger a download of the updated JSON database file for Git backup
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(existingArticles, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "articles.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
 
       const banner = document.getElementById('success-banner');
       banner.style.display = 'block';
@@ -264,7 +266,7 @@
 
       setTimeout(() => {
         banner.style.display = 'none';
-      }, 4000);
+      }, 5000);
     };
   </script>
 </body>

@@ -3,16 +3,26 @@ let currentCategoryPool = [];
 let currentCategoryIndex = 0;
 let allArticles = [];
 
-// Load articles exclusively from localStorage (ensuring old articles persist on every push)
-function loadArticlesDatabase() {
+// Load articles from localStorage, with a fallback fetch to articles.json for new visitors/devices
+async function loadArticlesDatabase() {
   const saved = localStorage.getItem('iv_articles');
   if (saved) {
     try {
       allArticles = JSON.parse(saved);
+      return;
     } catch (e) {
       allArticles = [];
     }
-  } else {
+  }
+  
+  // Fallback to fetch static articles.json file from repository
+  try {
+    const response = await fetch('articles.json');
+    if (response.ok) {
+      allArticles = await response.json();
+      localStorage.setItem('iv_articles', JSON.stringify(allArticles));
+    }
+  } catch (e) {
     allArticles = [];
   }
 }
@@ -29,8 +39,8 @@ const mainLayout = document.getElementById('main-layout');
 const frontSidebar = document.getElementById('front-sidebar');
 
 // Render Front Page Showcasing Only the Most Recent Article per Category
-function renderFrontPage(filteredList = null) {
-  loadArticlesDatabase();
+async function renderFrontPage(filteredList = null) {
+  await loadArticlesDatabase();
   const categories = ['philosophy', 'physics', 'mathematics'];
   const listToUse = filteredList || allArticles;
   
@@ -41,11 +51,10 @@ function renderFrontPage(filteredList = null) {
     showcaseElem.innerHTML = '';
 
     if (catArticles.length === 0) {
-      showcaseElem.innerHTML = '<p class="card-snippet" style="font-style:italic; color:var(--muted-ink);">No articles published in this section yet. Use the Admin Portal to add articles.</p>';
+      showcaseElem.innerHTML = '<p class="card-snippet" style="font-style:italic; color:var(--muted-ink);">No articles published in this section yet.</p>';
       return;
     }
 
-    // Pick the most recent article for this category
     const latestArt = catArticles[0];
 
     const card = document.createElement('article');
@@ -61,9 +70,9 @@ function renderFrontPage(filteredList = null) {
   });
 }
 
-// Open Category Archive View (Horizontal Light Boxes for all articles in a category)
-function openCategoryArchive(categoryName) {
-  loadArticlesDatabase();
+// Open Category Archive View
+async function openCategoryArchive(categoryName) {
+  await loadArticlesDatabase();
   const catArticles = allArticles.filter(a => a.category === categoryName);
   
   document.getElementById('archive-title').textContent = `${categoryName.toUpperCase()} ARCHIVE`;
@@ -102,13 +111,12 @@ function openCategoryArchive(categoryName) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Open Article Reader Spread View (Restricts rotation pool strictly to that category)
-function openArticle(articleId) {
-  loadArticlesDatabase();
+// Open Article Reader Spread View
+async function openArticle(articleId) {
+  await loadArticlesDatabase();
   const targetArt = allArticles.find(a => a.id === articleId);
   if (!targetArt) return;
 
-  // Filter pool strictly by the selected article's category
   currentCategoryPool = allArticles.filter(a => a.category === targetArt.category);
   currentCategoryIndex = currentCategoryPool.findIndex(a => a.id === articleId);
 
@@ -124,7 +132,6 @@ function openArticle(articleId) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Display Active Article in Book Spread Format
 function displayCurrentArticle() {
   const art = currentCategoryPool[currentCategoryIndex];
   if (!art) return;
@@ -135,7 +142,6 @@ function displayCurrentArticle() {
   document.getElementById('article-quote').textContent = art.quote || "—";
   document.getElementById('right-essay-tag').textContent = art.category.toUpperCase();
 
-  // Process Paragraphs
   const container = document.getElementById('article-body-container');
   container.innerHTML = '';
   const paragraphs = art.body.split('\n\n');
@@ -147,19 +153,16 @@ function displayCurrentArticle() {
     }
   });
 
-  // Page Numbers & Position Indicator
   document.getElementById('page-num-left').textContent = String((currentCategoryIndex * 2) + 1).padStart(2, '0');
   document.getElementById('page-num-right').textContent = String((currentCategoryIndex * 2) + 2).padStart(2, '0');
   document.getElementById('reading-position').textContent = `${art.category.toUpperCase()} (${currentCategoryIndex + 1} of ${currentCategoryPool.length})`;
 
-  // Update Nav Buttons State (Rotates strictly within the same category compartment)
   document.getElementById('prev-article').disabled = currentCategoryIndex === 0;
   document.getElementById('next-article').disabled = currentCategoryIndex === currentCategoryPool.length - 1;
 
   renderTOCList();
 }
 
-// Render Table of Contents inside collapsible menu
 function renderTOCList(filterQuery = '') {
   const tocList = document.getElementById('toc-articles-list');
   tocList.innerHTML = '';
@@ -198,7 +201,6 @@ function renderTOCList(filterQuery = '') {
   });
 }
 
-// Return to Newspaper Front Page
 function returnToFront() {
   archiveView.classList.remove('active');
   readerView.classList.remove('active');
@@ -209,9 +211,8 @@ function returnToFront() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Search Filtering on Front Page
-function handleSearch() {
-  loadArticlesDatabase();
+async function handleSearch() {
+  await loadArticlesDatabase();
   const query = searchInput.value.toLowerCase().trim();
   
   if (query === '') {
@@ -233,7 +234,6 @@ function handleSearch() {
   }
 }
 
-// Event Listeners Initialization
 document.addEventListener('DOMContentLoaded', () => {
   renderFrontPage();
 
@@ -262,7 +262,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // TOC Dropdown Toggle
   const tocBtn = document.getElementById('toc-toggle-btn');
   const tocPanel = document.getElementById('toc-dropdown-panel');
   tocBtn.onclick = (e) => {

@@ -31,10 +31,8 @@
       font-family: var(--font-heading);
       font-size: 1.6rem;
     }
-    .success-banner {
+    .banner {
       display: none;
-      background: var(--ink-color);
-      color: var(--paper-color);
       padding: 15px;
       font-size: 0.9rem;
       margin-bottom: 25px;
@@ -42,6 +40,9 @@
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
+    .success-banner { background: var(--ink-color); color: var(--paper-color); }
+    .loading-banner { background: #e6db74; color: #111; }
+    
     .admin-form .form-group {
       margin-bottom: 25px;
     }
@@ -54,6 +55,7 @@
       display: block;
     }
     .admin-form input[type="text"],
+    .admin-form input[type="password"],
     .admin-form select,
     .admin-form textarea {
       width: 100%;
@@ -76,10 +78,11 @@
       font-size: 1.05rem;
       line-height: 1.65;
     }
-    .admin-form input:focus, .admin-form textarea:focus, .admin-form select:focus {
-      background: #fff;
-      border-color: #000;
-      box-shadow: 0 0 0 1px #111;
+    .setup-box {
+      background: #f0eee6;
+      border: 1px solid var(--border-color);
+      padding: 20px;
+      margin-bottom: 30px;
     }
     #login-gate {
       position: fixed;
@@ -96,7 +99,6 @@
       padding: 35px;
       width: 100%;
       max-width: 420px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
     .login-box h2 {
       font-family: var(--font-heading);
@@ -118,7 +120,7 @@
   <div id="login-gate">
     <div class="login-box">
       <h2>Restricted Admin Portal</h2>
-      <p style="font-size: 0.85rem; color: var(--muted-ink); margin-bottom: 20px;">Enter your admin password to publish articles.</p>
+      <p style="font-size: 0.85rem; color: var(--muted-ink); margin-bottom: 20px;">Enter your admin password to access CMS.</p>
       <form id="login-form">
         <div class="form-group" style="margin-bottom: 15px;">
           <input type="password" id="admin-pass-input" required placeholder="Enter password..." style="width:100%; padding:10px; border:1px solid #111;" />
@@ -142,12 +144,26 @@
   <div class="admin-wrapper">
     <div class="admin-header">
       <h1>Publish New Article</h1>
-      <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted-ink);">Permanent Storage Sync</span>
+      <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted-ink);">Direct Cloud Sync</span>
     </div>
 
-    <div id="success-banner" class="success-banner">
-      ✓ Article published! A backup file has also been downloaded to your computer.
+    <!-- ONE-TIME SETUP BOX (Automatically hides after token is saved) -->
+    <div id="setup-container" class="setup-box" style="display: none;">
+      <h3 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">One-Time GitHub Setup</h3>
+      <p style="font-size: 0.8rem; color: var(--muted-ink); margin-bottom: 12px;">Paste your GitHub Personal Access Token below once. It will be saved securely in your browser so you never have to enter it again.</p>
+      <div class="form-group" style="margin-bottom: 10px;">
+        <input type="password" id="gh-token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
+      </div>
+      <button type="button" id="save-token-btn" class="primary-btn" style="padding: 8px 16px; font-size: 0.8rem;">Save Token &amp; Continue</button>
     </div>
+
+    <!-- Connected Status Badge -->
+    <div id="connected-badge" style="display: none; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 20px; color: #006600; background: #eef9ee; padding: 8px 12px; border: 1px solid #ccedcc;">
+      ✓ Connected to GitHub Repository (<span id="repo-display"></span>) &bull; <a href="#" id="reset-token-link" style="color: #004400; text-decoration: underline; margin-left: 10px;">Change Token</a>
+    </div>
+
+    <div id="loading-banner" class="banner loading-banner">⏳ Pushing article directly to GitHub &amp; triggering live deployment...</div>
+    <div id="success-banner" class="banner success-banner">✓ Article published successfully! It is now live globally on your website.</div>
 
     <form id="admin-article-form" class="admin-form">
       <div class="form-group">
@@ -172,12 +188,12 @@
 
       <div class="form-group">
         <label for="form-excerpt">Front Page Extract / Excerpt</label>
-        <textarea id="form-excerpt" rows="3" required placeholder="Short preview snippet displayed under the heading on the main page compartment..."></textarea>
+        <textarea id="form-excerpt" rows="3" required placeholder="Short preview snippet displayed under the heading on the main page..."></textarea>
       </div>
 
       <div class="form-group">
         <label for="form-quote">Pull Quote / Subtitle (Left Page Spread)</label>
-        <textarea id="form-quote" rows="3" placeholder="Key quotation or subtitle displayed directly beneath the title on the left page..."></textarea>
+        <textarea id="form-quote" rows="3" placeholder="Key quotation or subtitle displayed directly beneath the title..."></textarea>
       </div>
 
       <div class="form-group">
@@ -196,6 +212,8 @@
 
   <script>
     const ADMIN_PASSWORD = "Xfinity+1"; 
+    const GITHUB_USER = "nikitarebello";
+    const GITHUB_REPO = "the-infinite-void";
 
     const loginGate = document.getElementById('login-gate');
     const loginForm = document.getElementById('login-form');
@@ -203,15 +221,16 @@
 
     if (sessionStorage.getItem('iv_authenticated') === 'true') {
       loginGate.style.display = 'none';
+      checkTokenSetup();
     }
 
     loginForm.onsubmit = (e) => {
       e.preventDefault();
-      const enteredPass = document.getElementById('admin-pass-input').value;
-      if (enteredPass === ADMIN_PASSWORD) {
+      if (document.getElementById('admin-pass-input').value === ADMIN_PASSWORD) {
         sessionStorage.setItem('iv_authenticated', 'true');
         loginGate.style.display = 'none';
         loginError.style.display = 'none';
+        checkTokenSetup();
       } else {
         loginError.style.display = 'block';
       }
@@ -222,8 +241,47 @@
       location.reload();
     };
 
-    document.getElementById('admin-article-form').onsubmit = (e) => {
+    function checkTokenSetup() {
+      const savedToken = localStorage.getItem('iv_gh_token');
+      const setupContainer = document.getElementById('setup-container');
+      const connectedBadge = document.getElementById('connected-badge');
+      
+      if (!savedToken) {
+        setupContainer.style.display = 'block';
+        connectedBadge.style.display = 'none';
+      } else {
+        setupContainer.style.display = 'none';
+        connectedBadge.style.display = 'block';
+        document.getElementById('repo-display').textContent = `${GITHUB_USER}/${GITHUB_REPO}`;
+      }
+    }
+
+    document.getElementById('save-token-btn').onclick = () => {
+      const token = document.getElementById('gh-token-input').value.trim();
+      if (!token) {
+        alert("Please paste your GitHub token.");
+        return;
+      }
+      localStorage.setItem('iv_gh_token', token);
+      checkTokenSetup();
+    };
+
+    document.getElementById('reset-token-link').onclick = (e) => {
       e.preventDefault();
+      localStorage.removeItem('iv_gh_token');
+      checkTokenSetup();
+    };
+
+    // Article Form Submission
+    document.getElementById('admin-article-form').onsubmit = async (e) => {
+      e.preventDefault();
+
+      const token = localStorage.getItem('iv_gh_token');
+      if (!token) {
+        alert("GitHub token is missing. Please complete the one-time setup.");
+        checkTokenSetup();
+        return;
+      }
 
       const title = document.getElementById('form-title').value.trim();
       const category = document.getElementById('form-category').value;
@@ -232,7 +290,6 @@
       const quote = document.getElementById('form-quote').value.trim();
       const body = document.getElementById('form-content').value.trim();
       const tagsRaw = document.getElementById('form-tags').value;
-      
       const tags = tagsRaw.split(',').map(t => t.trim().toLowerCase()).filter(t => t);
 
       const newArt = {
@@ -246,27 +303,59 @@
         tags
       };
 
-      let existingArticles = JSON.parse(localStorage.getItem('iv_articles')) || [];
-      existingArticles.unshift(newArt);
-      localStorage.setItem('iv_articles', JSON.stringify(existingArticles));
-
-      // Automatically trigger a download of the updated JSON database file for Git backup
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(existingArticles, null, 2));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", "articles.json");
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-
-      const banner = document.getElementById('success-banner');
-      banner.style.display = 'block';
-      document.getElementById('admin-article-form').reset();
+      const loadingBanner = document.getElementById('loading-banner');
+      const successBanner = document.getElementById('success-banner');
+      loadingBanner.style.display = 'block';
+      successBanner.style.display = 'none';
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      setTimeout(() => {
-        banner.style.display = 'none';
-      }, 5000);
+      try {
+        const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/articles.json`;
+        let existingArticles = [];
+        let sha = null;
+
+        const getRes = await fetch(apiUrl, {
+          headers: { 'Authorization': `token ${token}` }
+        });
+
+        if (getRes.ok) {
+          const fileData = await getRes.json();
+          sha = fileData.sha;
+          const decodedContent = decodeURIComponent(escape(atob(fileData.content)));
+          existingArticles = JSON.parse(decodedContent);
+        }
+
+        existingArticles.unshift(newArt);
+
+        const updatedContentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(existingArticles, null, 2))));
+
+        const putRes = await fetch(apiUrl, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `token ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: `Publish new article: ${title}`,
+            content: updatedContentBase64,
+            sha: sha
+          })
+        });
+
+        if (putRes.ok) {
+          loadingBanner.style.display = 'none';
+          successBanner.style.display = 'block';
+          document.getElementById('admin-article-form').reset();
+          localStorage.setItem('iv_articles', JSON.stringify(existingArticles));
+        } else {
+          const errData = await putRes.json();
+          throw new Error(errData.message || "Failed to commit to GitHub");
+        }
+
+      } catch (err) {
+        loadingBanner.style.display = 'none';
+        alert("Error publishing article: " + err.message + "\nCheck if your GitHub Token is correct or has 'repo' permissions.");
+      }
     };
   </script>
 </body>

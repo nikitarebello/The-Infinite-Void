@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="style.css" />
   <style>
     .admin-wrapper {
-      max-width: 900px;
+      max-width: 950px;
       margin: 40px auto;
       background: var(--paper-color);
       border: 2px solid var(--border-color);
@@ -84,6 +84,64 @@
       padding: 20px;
       margin-bottom: 30px;
     }
+    
+    /* Article Manager Section */
+    .manager-section {
+      margin-top: 50px;
+      border-top: 2px solid var(--border-color);
+      padding-top: 30px;
+    }
+    .manager-header {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .article-row-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 15px;
+      border: 1px solid var(--light-border);
+      margin-bottom: 10px;
+      background: #faf9f5;
+    }
+    .article-row-info h4 {
+      font-family: var(--font-serif);
+      font-size: 1.05rem;
+      margin-bottom: 2px;
+    }
+    .article-row-meta {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: var(--muted-ink);
+      letter-spacing: 0.05em;
+    }
+    .article-row-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .action-btn {
+      padding: 5px 10px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      background: #fff;
+      text-transform: uppercase;
+    }
+    .action-btn.delete {
+      background: #fff0f0;
+      color: #900;
+      border-color: #d99;
+    }
+    .action-btn.delete:hover {
+      background: #900;
+      color: #fff;
+    }
+    
     #login-gate {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -143,14 +201,14 @@
 
   <div class="admin-wrapper">
     <div class="admin-header">
-      <h1>Publish New Article</h1>
+      <h1 id="form-heading-title">Publish New Article</h1>
       <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted-ink);">Direct Cloud Sync</span>
     </div>
 
-    <!-- ONE-TIME SETUP BOX (Automatically hides after token is saved) -->
+    <!-- ONE-TIME SETUP BOX -->
     <div id="setup-container" class="setup-box" style="display: none;">
       <h3 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">One-Time GitHub Setup</h3>
-      <p style="font-size: 0.8rem; color: var(--muted-ink); margin-bottom: 12px;">Paste your GitHub Personal Access Token below once. It will be saved securely in your browser so you never have to enter it again.</p>
+      <p style="font-size: 0.8rem; color: var(--muted-ink); margin-bottom: 12px;">Paste your GitHub Personal Access Token below once.</p>
       <div class="form-group" style="margin-bottom: 10px;">
         <input type="password" id="gh-token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
       </div>
@@ -162,10 +220,12 @@
       ✓ Connected to GitHub Repository (<span id="repo-display"></span>) &bull; <a href="#" id="reset-token-link" style="color: #004400; text-decoration: underline; margin-left: 10px;">Change Token</a>
     </div>
 
-    <div id="loading-banner" class="banner loading-banner">⏳ Pushing article directly to GitHub &amp; triggering live deployment...</div>
-    <div id="success-banner" class="banner success-banner">✓ Article published successfully! It is now live globally on your website.</div>
+    <div id="loading-banner" class="banner loading-banner">⏳ Pushing changes directly to GitHub &amp; triggering live deployment...</div>
+    <div id="success-banner" class="banner success-banner">✓ Changes published successfully! Live on your website.</div>
 
     <form id="admin-article-form" class="admin-form">
+      <input type="hidden" id="form-edit-id" value="" />
+
       <div class="form-group">
         <label for="form-title">Article Title</label>
         <input type="text" id="form-title" required placeholder="e.g. THE ILLUSION OF TEMPORAL FLOW" />
@@ -206,8 +266,23 @@
         <input type="text" id="form-tags" placeholder="e.g. time, metaphysics, consciousness" />
       </div>
 
-      <button type="submit" class="primary-btn" style="width: 100%; padding: 15px; font-size: 0.95rem; margin-top: 10px;">Publish Article Live &rarr;</button>
+      <div style="display: flex; gap: 10px;">
+        <button type="submit" id="submit-btn" class="primary-btn" style="flex: 1; padding: 15px; font-size: 0.95rem; margin-top: 10px;">Publish Article Live &rarr;</button>
+        <button type="button" id="cancel-edit-btn" class="secondary-btn" style="display:none; padding: 15px; font-size: 0.95rem; margin-top: 10px;">Cancel Edit</button>
+      </div>
     </form>
+
+    <!-- EXISTING ARTICLES MANAGER SECTION -->
+    <div class="manager-section">
+      <div class="manager-header">
+        <span>Manage Existing Articles</span>
+        <span id="total-articles-count" style="font-size:0.75rem; color:var(--muted-ink);">0 articles</span>
+      </div>
+      <div id="admin-articles-list">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+
   </div>
 
   <script>
@@ -222,6 +297,7 @@
     if (sessionStorage.getItem('iv_authenticated') === 'true') {
       loginGate.style.display = 'none';
       checkTokenSetup();
+      fetchAndRenderManagerArticles();
     }
 
     loginForm.onsubmit = (e) => {
@@ -231,6 +307,7 @@
         loginGate.style.display = 'none';
         loginError.style.display = 'none';
         checkTokenSetup();
+        fetchAndRenderManagerArticles();
       } else {
         loginError.style.display = 'block';
       }
@@ -272,17 +349,108 @@
       checkTokenSetup();
     };
 
-    // Article Form Submission
-    document.getElementById('admin-article-form').onsubmit = async (e) => {
-      e.preventDefault();
+    // Fetch articles from GitHub for the management list
+    async function fetchAndRenderManagerArticles() {
+      const listContainer = document.getElementById('admin-articles-list');
+      listContainer.innerHTML = '<p style="font-size:0.85rem; color:var(--muted-ink);">Loading articles from repository...</p>';
 
-      const token = localStorage.getItem('iv_gh_token');
-      if (!token) {
-        alert("GitHub token is missing. Please complete the one-time setup.");
-        checkTokenSetup();
+      try {
+        const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/articles.json`;
+        const res = await fetch(apiUrl);
+        if (res.ok) {
+          const fileData = await res.json();
+          const decodedContent = decodeURIComponent(escape(atob(fileData.content)));
+          const articles = JSON.parse(decodedContent);
+
+          localStorage.setItem('iv_articles', JSON.stringify(articles));
+          renderManagerList(articles);
+        } else {
+          listContainer.innerHTML = '<p style="font-size:0.85rem; color:#b00;">Could not load articles from GitHub.</p>';
+        }
+      } catch (err) {
+        // Fallback to local storage if offline
+        const local = JSON.parse(localStorage.getItem('iv_articles')) || [];
+        renderManagerList(local);
+      }
+    }
+
+    function renderManagerList(articles) {
+      const listContainer = document.getElementById('admin-articles-list');
+      document.getElementById('total-articles-count').textContent = `${articles.length} article(s)`;
+      listContainer.innerHTML = '';
+
+      if (articles.length === 0) {
+        listContainer.innerHTML = '<p style="font-size:0.85rem; color:var(--muted-ink); font-style:italic;">No articles found in repository.</p>';
         return;
       }
 
+      articles.forEach(art => {
+        const row = document.createElement('div');
+        row.className = 'article-row-item';
+        row.innerHTML = `
+          <div class="article-row-info">
+            <h4>${art.title}</h4>
+            <div class="article-row-meta">Category: <strong>${art.category.toUpperCase()}</strong> &bull; Date: ${art.date}</div>
+          </div>
+          <div class="article-row-actions">
+            <button type="button" class="action-btn" onclick="startEditArticle('${art.id}')">Edit</button>
+            <button type="button" class="action-btn delete" onclick="deleteArticle('${art.id}')">Delete</button>
+          </div>
+        `;
+        listContainer.appendChild(row);
+      });
+    }
+
+    // Load Article into Form for Editing
+    window.startEditArticle = function(id) {
+      const articles = JSON.parse(localStorage.getItem('iv_articles')) || [];
+      const art = articles.find(a => a.id === id);
+      if (!art) return;
+
+      document.getElementById('form-edit-id').value = art.id;
+      document.getElementById('form-title').value = art.title;
+      document.getElementById('form-category').value = art.category;
+      document.getElementById('form-date').value = art.date;
+      document.getElementById('form-excerpt').value = art.excerpt || '';
+      document.getElementById('form-quote').value = art.quote || '';
+      document.getElementById('form-content').value = art.body;
+      document.getElementById('form-tags').value = art.tags ? art.tags.join(', ') : '';
+
+      document.getElementById('form-heading-title').textContent = "Edit Article";
+      document.getElementById('submit-btn').textContent = "Save Changes Live \u2192";
+      document.getElementById('cancel-edit-btn').style.display = 'block';
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.getElementById('cancel-edit-btn').onclick = () => {
+      resetFormToCreateMode();
+    };
+
+    function resetFormToCreateMode() {
+      document.getElementById('admin-article-form').reset();
+      document.getElementById('form-edit-id').value = '';
+      document.getElementById('form-heading-title').textContent = "Publish New Article";
+      document.getElementById('submit-btn').textContent = "Publish Article Live \u2192";
+      document.getElementById('cancel-edit-btn').style.display = 'none';
+    }
+
+    // Delete Article Function
+    window.deleteArticle = async function(id) {
+      if (!confirm("Are you sure you want to delete this article permanently?")) return;
+
+      let articles = JSON.parse(localStorage.getItem('iv_articles')) || [];
+      const artToDelete = articles.find(a => a.id === id);
+      articles = articles.filter(a => a.id !== id);
+
+      await pushArticlesToGitHub(articles, `Delete article: ${artToDelete ? artToDelete.title : id}`);
+    }
+
+    // Article Form Submit (Handles both Creating New & Updating Existing)
+    document.getElementById('admin-article-form').onsubmit = async (e) => {
+      e.preventDefault();
+
+      const editId = document.getElementById('form-edit-id').value;
       const title = document.getElementById('form-title').value.trim();
       const category = document.getElementById('form-category').value;
       const date = document.getElementById('form-date').value.trim() || 'OCTOBER 2026';
@@ -292,16 +460,51 @@
       const tagsRaw = document.getElementById('form-tags').value;
       const tags = tagsRaw.split(',').map(t => t.trim().toLowerCase()).filter(t => t);
 
-      const newArt = {
-        id: 'art_' + Date.now(),
-        category,
-        title: title.toUpperCase(),
-        date: date.toUpperCase(),
-        excerpt,
-        quote,
-        body,
-        tags
-      };
+      let articles = JSON.parse(localStorage.getItem('iv_articles')) || [];
+
+      if (editId) {
+        // Edit Mode: Update existing article
+        const index = articles.findIndex(a => a.id === editId);
+        if (index !== -1) {
+          articles[index] = {
+            id: editId,
+            category,
+            title: title.toUpperCase(),
+            date: date.toUpperCase(),
+            excerpt,
+            quote,
+            body,
+            tags
+          };
+        }
+      } else {
+        // Create Mode: Prepend new article
+        const newArt = {
+          id: 'art_' + Date.now(),
+          category,
+          title: title.toUpperCase(),
+          date: date.toUpperCase(),
+          excerpt,
+          quote,
+          body,
+          tags
+        };
+        articles.unshift(newArt);
+      }
+
+      const commitMsg = editId ? `Update article: ${title}` : `Publish new article: ${title}`;
+      await pushArticlesToGitHub(articles, commitMsg);
+      resetFormToCreateMode();
+    };
+
+    // Helper to commit array changes directly to GitHub API
+    async function pushArticlesToGitHub(articlesArray, commitMessage) {
+      const token = localStorage.getItem('iv_gh_token');
+      if (!token) {
+        alert("GitHub token is missing. Please complete the one-time setup.");
+        checkTokenSetup();
+        return;
+      }
 
       const loadingBanner = document.getElementById('loading-banner');
       const successBanner = document.getElementById('success-banner');
@@ -311,7 +514,6 @@
 
       try {
         const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/articles.json`;
-        let existingArticles = [];
         let sha = null;
 
         const getRes = await fetch(apiUrl, {
@@ -321,13 +523,9 @@
         if (getRes.ok) {
           const fileData = await getRes.json();
           sha = fileData.sha;
-          const decodedContent = decodeURIComponent(escape(atob(fileData.content)));
-          existingArticles = JSON.parse(decodedContent);
         }
 
-        existingArticles.unshift(newArt);
-
-        const updatedContentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(existingArticles, null, 2))));
+        const updatedContentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(articlesArray, null, 2))));
 
         const putRes = await fetch(apiUrl, {
           method: 'PUT',
@@ -336,7 +534,7 @@
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            message: `Publish new article: ${title}`,
+            message: commitMessage,
             content: updatedContentBase64,
             sha: sha
           })
@@ -345,18 +543,22 @@
         if (putRes.ok) {
           loadingBanner.style.display = 'none';
           successBanner.style.display = 'block';
-          document.getElementById('admin-article-form').reset();
-          localStorage.setItem('iv_articles', JSON.stringify(existingArticles));
+          localStorage.setItem('iv_articles', JSON.stringify(articlesArray));
+          fetchAndRenderManagerArticles();
+
+          setTimeout(() => {
+            successBanner.style.display = 'none';
+          }, 4000);
         } else {
           const errData = await putRes.json();
-          throw new Error(errData.message || "Failed to commit to GitHub");
+          throw new Error(errData.message || "Failed to commit changes to GitHub");
         }
 
       } catch (err) {
         loadingBanner.style.display = 'none';
-        alert("Error publishing article: " + err.message + "\nCheck if your GitHub Token is correct or has 'repo' permissions.");
+        alert("Error syncing with GitHub: " + err.message);
       }
-    };
+    }
   </script>
 </body>
 </html>

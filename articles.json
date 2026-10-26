@@ -1,11 +1,25 @@
 [
   {
+    "id": "art_1792974532909",
+    "category": "mathematics",
+    "title": "THE SAND RECKONER",
+    "date": "OCTOBER 2026",
+    "excerpt": "The universe isn't infinite, our tools just weren't big enough to count it.",
+    "quote": "\"Eureka!\" -Archimedes",
+    "body": "In his treatise The Sand Reckoner, Archimedes confronts a seemingly insurmountable question: how many grains of sand would it take to fill the universe?\n\nAt a time when Greek numerical system was ill-equipped to express quantities of extraordinary magnitude, Archimedes devised a mathematical framework that extended numerical thought far beyond its conventional limits. His objective was not to find a finite number or to count the uncountable, but to refute the prevailing notion that quantities on such an immense scale were inherently inexpressible. He sought to demonstrate that even the seemingly infinite could be approached through the disciplined language of mathematics.\n\nBy estimating the universe's diameter at no more than $10^{14}$ stadia, Archimedes calculated that filling it with sand would require a quantity equivalent to approximately $8 \\times 10^{63}$ grains in modern notation, a figure far below the upper limits of his newly created system, what in modern day is referred to as the place value notation.\n\nArchimedes demonstrated that the boundaries of knowledge are often determined less by the scale of a problem and rather the limitations of the tools with which we approach it. This leaves us with the question: If the universe can be rendered intelligible through mathematics, did he construct the most powerful framework through which the human mind can comprehend it?",
+    "tags": [
+      "archimedes",
+      "numeric",
+      "infinite"
+    ]
+  },
+  {
     "id": "art_1792967640588",
     "category": "philosophy",
     "title": "THE ENIGMA OF CONSCIOUSNESS",
     "date": "OCTOBER 2026",
     "excerpt": "What if the boundary between your mind and the universe is merely an illusion of perspective?",
-    "quote": "\"Consciousness is a singular of which the plural is unknown\" - Erwin Schrödinger",
+    "quote": "\"Consciousness is a singular of which the plural is unknown\"",
     "body": "Erwin Schrödinger’s aphorism intimates one of the most profound enigma's of existence: whether consciousness, despite its apparent multiplicity, is fundamentally one rather than a collection of separate, self-contained experiences.\n\nIf consciousness cannot be meaningfully pluralized, then the distinction between the observer and the observed, between you and I, may be far less fundamental than our subjective experience suggests. If consciousness is singular, are we truly separate beings experiencing the universe, or is it the universe experiencing itself through us?\n\nJust as waves are the ocean’s way of expressing movement, in a similar sense our individual consciousnesses (plural) are like a ripple in the universal mind or conscious (singular). The daily impression of separate minds may simply be this single conscious reality looking back at itself through different pairs of eyes.\n\nWhile this perspective remains a philosophical interpretation rather than a scientific conclusion, it compels us to reconsider our most basic assumption of existence, inviting us to see beyond the illusion of division.",
     "tags": [
       "consciousness",

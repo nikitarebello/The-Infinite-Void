@@ -3,7 +3,6 @@ let currentCategoryPool = [];
 let currentCategoryIndex = 0;
 let allArticles = [];
 
-// Load articles from localStorage, with a fallback fetch to articles.json for new visitors/devices
 async function loadArticlesDatabase() {
   const saved = localStorage.getItem('iv_articles');
   if (saved) {
@@ -14,8 +13,6 @@ async function loadArticlesDatabase() {
       allArticles = [];
     }
   }
-  
-  // Fallback to fetch static articles.json file from repository
   try {
     const response = await fetch('articles.json');
     if (response.ok) {
@@ -38,7 +35,6 @@ const siteHeader = document.getElementById('site-header-container');
 const mainLayout = document.getElementById('main-layout');
 const frontSidebar = document.getElementById('front-sidebar');
 
-// Render Front Page Showcasing Only the Most Recent Article per Category
 async function renderFrontPage(filteredList = null) {
   await loadArticlesDatabase();
   const categories = ['philosophy', 'physics', 'mathematics'];
@@ -47,7 +43,6 @@ async function renderFrontPage(filteredList = null) {
   categories.forEach(cat => {
     const showcaseElem = document.getElementById(`showcase-${cat}`);
     const catArticles = listToUse.filter(a => a.category === cat);
-    
     showcaseElem.innerHTML = '';
 
     if (catArticles.length === 0) {
@@ -56,7 +51,6 @@ async function renderFrontPage(filteredList = null) {
     }
 
     const latestArt = catArticles[0];
-
     const card = document.createElement('article');
     card.className = 'article-card';
     card.onclick = () => openArticle(latestArt.id);
@@ -70,7 +64,6 @@ async function renderFrontPage(filteredList = null) {
   });
 }
 
-// Open Category Archive View
 async function openCategoryArchive(categoryName) {
   await loadArticlesDatabase();
   const catArticles = allArticles.filter(a => a.category === categoryName);
@@ -107,11 +100,9 @@ async function openCategoryArchive(categoryName) {
   siteHeader.classList.add('compact');
   mainLayout.classList.add('full-width');
   frontSidebar.style.display = 'none';
-
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Open Article Reader Spread View
 async function openArticle(articleId) {
   await loadArticlesDatabase();
   const targetArt = allArticles.find(a => a.id === articleId);
@@ -128,7 +119,6 @@ async function openArticle(articleId) {
   siteHeader.classList.add('compact');
   mainLayout.classList.add('full-width');
   frontSidebar.style.display = 'none';
-
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -142,15 +132,19 @@ function displayCurrentArticle() {
   document.getElementById('article-quote').textContent = art.quote || "—";
   document.getElementById('right-essay-tag').textContent = art.category.toUpperCase();
 
+  // Parse Markdown & KaTeX LaTeX formatting inside the body
   const container = document.getElementById('article-body-container');
-  container.innerHTML = '';
-  const paragraphs = art.body.split('\n\n');
-  paragraphs.forEach(pText => {
-    if (pText.trim()) {
-      const p = document.createElement('p');
-      p.textContent = pText;
-      container.appendChild(p);
-    }
+  container.innerHTML = marked.parse(art.body);
+
+  // Automatically render mathematical formulas using KaTeX
+  renderMathInElement(container, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false},
+      {left: '\\(', right: '\\)', display: false},
+      {left: '\\[', right: '\\]', display: true}
+    ],
+    throwOnError: false
   });
 
   document.getElementById('page-num-left').textContent = String((currentCategoryIndex * 2) + 1).padStart(2, '0');

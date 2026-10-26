@@ -9,6 +9,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,400&display=swap" rel="stylesheet">
   
+  <!-- KaTeX CSS for Mathematical Equations -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -43,7 +46,6 @@
         
         <div class="contact-info">
           <p><strong>Contact:</strong> <a href="mailto:theinfinitevoid@gmail.com">theinfinitevoid@gmail.com</a></p>
-          <p><strong>GitHub:</strong> <a href="https://github.com" target="_blank">github.com</a></p>
         </div>
       </section>
 
@@ -60,34 +62,21 @@
     <!-- RIGHT CONTENT DISPLAY -->
     <section class="content-area" id="content-area">
 
-      <!-- FRONT PAGE (Newspaper Style) -->
+      <!-- FRONT PAGE -->
       <div id="front-page" class="view-panel active">
         <div class="newspaper-grid">
-          
-          <!-- PHILOSOPHY COLUMN -->
           <div class="column category-col">
-            <div class="col-header">
-              <h2 class="clickable-category" onclick="openCategoryArchive('philosophy')">Philosophy &rarr;</h2>
-            </div>
+            <div class="col-header"><h2 class="clickable-category" onclick="openCategoryArchive('philosophy')">Philosophy &rarr;</h2></div>
             <div class="article-showcase" id="showcase-philosophy"></div>
           </div>
-
-          <!-- PHYSICS COLUMN -->
           <div class="column category-col">
-            <div class="col-header">
-              <h2 class="clickable-category" onclick="openCategoryArchive('physics')">Physics &rarr;</h2>
-            </div>
+            <div class="col-header"><h2 class="clickable-category" onclick="openCategoryArchive('physics')">Physics &rarr;</h2></div>
             <div class="article-showcase" id="showcase-physics"></div>
           </div>
-
-          <!-- MATHEMATICS COLUMN -->
           <div class="column category-col">
-            <div class="col-header">
-              <h2 class="clickable-category" onclick="openCategoryArchive('mathematics')">Mathematics &rarr;</h2>
-            </div>
+            <div class="col-header"><h2 class="clickable-category" onclick="openCategoryArchive('mathematics')">Mathematics &rarr;</h2></div>
             <div class="article-showcase" id="showcase-mathematics"></div>
           </div>
-
         </div>
       </div>
 
@@ -102,11 +91,9 @@
 
       <!-- SPREAD / READER VIEW -->
       <div id="reader-view" class="view-panel">
-        
         <div class="reader-toolbar">
           <div class="reader-toolbar-left">
             <button id="back-to-front" class="secondary-btn">&larr; Return to Front Page</button>
-            
             <div class="toc-dropdown-wrapper">
               <button id="toc-toggle-btn" class="secondary-btn toc-btn">☰ Table of Contents &amp; Search</button>
               <div id="toc-dropdown-panel" class="toc-dropdown-panel">
@@ -118,7 +105,6 @@
               </div>
             </div>
           </div>
-          
           <div class="reader-nav-controls">
             <button id="prev-article" class="nav-arrow">&larr; Previous</button>
             <span id="reading-position" class="page-indicator">Article 1 of 3</span>
@@ -128,48 +114,42 @@
 
         <!-- Book Spread Layout -->
         <div class="book-spread">
-          
-          <!-- LEFT PAGE -->
           <div class="page left-page">
             <div class="page-header">
               <span id="article-category" class="category-badge">PHYSICS</span>
               <span id="article-date" class="meta-date">OCTOBER 2026</span>
             </div>
-
             <div class="left-page-content">
               <h1 id="article-title" class="spread-title">TITLE HERE</h1>
               <div class="title-divider"></div>
-              <p id="article-quote" class="spread-quote">
-                Pull quote or subtitle will appear here...
-              </p>
+              <p id="article-quote" class="spread-quote">Pull quote or subtitle...</p>
             </div>
-
             <div class="page-footer">
               <span>THE INFINITE VOID</span>
               <span id="page-num-left">01</span>
             </div>
           </div>
 
-          <!-- RIGHT PAGE -->
           <div class="page right-page">
             <div class="right-page-header">
               <span class="essay-tag" id="right-essay-tag">ESSAY</span>
             </div>
-
             <div id="article-body-container" class="article-body-single-column"></div>
-
             <div class="page-footer">
               <span id="page-num-right">02</span>
               <span>THE INFINITE VOID</span>
             </div>
           </div>
-
         </div>
       </div>
 
     </section>
   </main>
 
+  <!-- Marked.js for Markdown parsing & KaTeX for LaTeX rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
